@@ -87,7 +87,7 @@
 
 type bits_rm     = bits(3)    /* Rounding mode */
 type bits_fflags = bits(5)    /* Accrued exceptions: NV,DZ,OF,UF,NX */
-type bits_H      = bits(16)   /* Half-precision float value */      
+type bits_H      = bits(16)   /* Half-precision float value */
 type bits_S      = bits(32)   /* Single-precision float value */
 type bits_D      = bits(64)   /* Double-precision float value */
 
@@ -522,5 +522,26 @@ val      riscv_f64Eq : (bits_D, bits_D) -> (bits_fflags, bool) effect {rreg}
 function riscv_f64Eq (v1, v2) = {
   extern_f64Eq(v1, v2);
   (float_fflags[4 .. 0], bit_to_bool(float_result[0]))
+}
+
+val     extern_f16roundToInt = {c: "softfloat_f16roundToInt", ocaml: "Softfloat.f16_round_to_int", lem: "softfloat_f16_round_to_int"} : (bits_rm, bits_H, bool) -> unit
+val      riscv_f16roundToInt : (bits_rm, bits_H, bool) -> (bits_fflags, bits_H) effect {rreg}
+function riscv_f16roundToInt (rm, v, exact) = {
+  extern_f16roundToInt(rm, v, exact);
+  (float_fflags[4 .. 0], float_result[15 .. 0])
+}
+
+val     extern_f32roundToInt = {c: "softfloat_f32roundToInt", ocaml: "Softfloat.f32_round_to_int", lem: "softfloat_f32_round_to_int"} : (bits_rm, bits_S, bool) -> unit
+val      riscv_f32roundToInt : (bits_rm, bits_S, bool) -> (bits_fflags, bits_S) effect {rreg}
+function riscv_f32roundToInt (rm, v, exact) = {
+  extern_f32roundToInt(rm, v, exact);
+  (float_fflags[4 .. 0], float_result[31 .. 0])
+}
+
+val     extern_f64roundToInt = {c: "softfloat_f64roundToInt", ocaml: "Softfloat.f64_round_to_int", lem: "softfloat_f64_round_to_int"} : (bits_rm, bits_D, bool) -> unit
+val      riscv_f64roundToInt : (bits_rm, bits_D, bool) -> (bits_fflags, bits_D) effect {rreg}
+function riscv_f64roundToInt (rm, v, exact) = {
+  extern_f64roundToInt(rm, v, exact);
+  (float_fflags[4 .. 0], float_result)
 }
 /* **************************************************************** */
